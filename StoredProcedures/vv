@@ -1,0 +1,65 @@
+-- =========================================
+-- STORED PROCEDURE: Crear producción por IDs
+-- =========================================
+CREATE OR REPLACE FUNCTION sp_create_production_by_ids(
+    p_area_id INT,
+    p_line_id INT,
+    p_workstation_id INT,
+    p_machine_id INT,
+    p_user_id INT,
+    p_date_time TIMESTAMPTZ,
+    p_quantity_produced_ok INT,
+    p_quantity_produced_ng INT,
+    p_production_time INTERVAL,
+    p_production_downtime INTERVAL
+)
+RETURNS TABLE (
+    ProductionId INT,
+    AreaId INT,
+    LineId INT,
+    WorkStationId INT,
+    MachineId INT,
+    UserId INT,
+    DateTime TIMESTAMPTZ,
+    QuantityProducedOK INT,
+    QuantityProducedNG INT,
+    ProductionTime INTERVAL,
+    ProductionDowntime INTERVAL
+) AS $$
+BEGIN
+    INSERT INTO "Productions" (
+        "AreaId", "LineId", "StationId", "MachineId", "UserId",
+        "DateTime", "QuantityProducedOK", "QuantityProducedNG",
+        "ProductionTime", "ProductionDowntime"
+    )
+    VALUES (
+        p_area_id, p_line_id, p_workstation_id, p_machine_id, p_user_id,
+        p_date_time, p_quantity_produced_ok, p_quantity_produced_ng,
+        p_production_time, p_production_downtime
+    )
+    RETURNING "ProductionId", "AreaId", "LineId", "StationId", "MachineId", "UserId",
+              "DateTime", "QuantityProducedOK", "QuantityProducedNG",
+              "ProductionTime", "ProductionDowntime"
+    INTO ProductionId, AreaId, LineId, WorkStationId, MachineId, UserId,
+         DateTime, QuantityProducedOK, QuantityProducedNG,
+         ProductionTime, ProductionDowntime;
+
+    RETURN NEXT;
+END;
+$$ LANGUAGE plpgsql;
+
+--- =========================================
+-- EJEMPLO
+-- =========================================
+SELECT sp_create_production_by_ids(
+    1,   -- AreaId
+    2,   -- LineId
+    3,   -- WorkStationId
+    4,   -- MachineId
+    5,   -- UserId
+    NOW(),
+    150,
+    7,
+    INTERVAL '7 hours',
+    INTERVAL '20 minutes'
+);

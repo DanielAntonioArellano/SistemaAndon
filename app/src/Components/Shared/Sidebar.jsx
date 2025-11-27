@@ -1,12 +1,21 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { FaHome, FaIndustry, FaTools, FaChartBar, FaUsers } from "react-icons/fa";
+
 
 const Sidebar = () => {
  
-
+const navigate = useNavigate();
 
   const [hoverIndex, setHoverIndex] = React.useState(null);
-
-  const menuItems = ["Inicio", "Producción", "Fallas", "Reportes", "Usuarios"];
+  ["Inicio", "Producción", "Fallas", "Reportes", "Usuarios"];
+  const menuItems = [
+    {name:"Inicio", path:"/dashboard",icon:<FaHome/>},
+    {name:"Produccion", path:"/Events",icon:<FaIndustry/>},
+    {name:"Fallas", path:"/Failure", icon:<FaTools/>},
+    {name:"Reportes", path:"/Production", icon:<FaChartBar/>},
+    {name:"Usuarios", path:"/Users", icon:<FaUsers/>}
+  ]
 
   return (
     <div style={styles.sidebar}>
@@ -18,10 +27,12 @@ const Sidebar = () => {
             ...styles.button,
             ...(hoverIndex === index ? styles.buttonHover : {})
           }}
+          onClick={()=> navigate(item.path)}
           onMouseEnter={() => setHoverIndex(index)}
           onMouseLeave={() => setHoverIndex(null)}
         >
-          {item}
+          <span style={styles.marginIcon}>{item.icon}</span>
+          {item.name}
         </button>
       ))}
     </div>
@@ -58,7 +69,12 @@ const Sidebar = () => {
       backgroundColor: "#1abc9c",
       color: "#2c3e50",
       transform: "scale(1.05)",
+    },
+    marginIcon:{
+      marginRight:"8px",
+      marginTop:"25px"
     }
+    
   };
 
 export default Sidebar;
